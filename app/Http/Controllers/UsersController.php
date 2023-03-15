@@ -19,7 +19,7 @@ class UsersController extends Controller
         ]);
 
         // 限流 一个小时内只能提交 10 次请求；
-        $this->middleware('throttle:10,60', [
+        $this->middleware('throttle:10,1', [
             'only' => ['store']
         ]);
     }
@@ -121,5 +121,19 @@ class UsersController extends Controller
         Auth::login($user);
         session()->flash('success', '恭喜你，激活成功！');
         return redirect()->route('users.show', [$user]);
+    }
+
+    public function followings(User $user)
+    {
+        $users = $user->followings()->paginate(30);
+        $title = $user->name . '关注的人';
+        return view('users.show_follow', compact('users', 'title'));
+    }
+
+    public function followers(User $user)
+    {
+        $users = $user->followers()->paginate(30);
+        $title = $user->name . '的粉丝';
+        return view('users.show_follow', compact('users', 'title'));
     }
 }
